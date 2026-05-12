@@ -2,1330 +2,732 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Script Hub - Key Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ByokuXMon | Premium Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root {
-            --primary: #10a37f;
-            --primary-hover: #0d8b6d;
-            --secondary: #6e56cf;
-            --accent: #ff6b6b;
-            --success: #10a37f;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg-dark: #0d0d0d;
-            --bg-card: #1a1a1a;
-            --bg-elevated: #262626;
-            --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --border: #2d2d2d;
-            --glow: rgba(16, 163, 127, 0.3);
+            --bg-deep: #060a0f;
+            --bg-panel: #0b1118;
+            --bg-card: #0f1923;
+            --bg-hover: #141f2e;
+            --border: #1a2d3f;
+            --border-bright: #1e3a50;
+            --green: #00ff88;
+            --green-dim: #00cc6a;
+            --green-glow: rgba(0,255,136,0.15);
+            --red: #ff3355;
+            --red-dim: #cc2244;
+            --red-glow: rgba(255,51,85,0.15);
+            --blue: #00aaff;
+            --yellow: #ffcc00;
+            --orange: #ff8800;
+            --purple: #aa55ff;
+            --gold: #c9a03d;
+            --gold-glow: rgba(201,160,61,0.15);
+            --text-primary: #e0eeff;
+            --text-secondary: #7a9ab8;
+            --text-dim: #3a5570;
+            --font-mono: 'Share Tech Mono', monospace;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-display: 'Orbitron', monospace;
         }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-dark);
+            background: var(--bg-deep);
             color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 14px;
             min-height: 100vh;
+        }
+        #scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Navigation Premium */
+        .nav-bar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 24px;
+            margin-bottom: 25px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
-
-        body::before {
+        .nav-bar::before {
             content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(16, 163, 127, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(110, 86, 207, 0.08) 0%, transparent 50%);
-            animation: backgroundMove 20s ease-in-out infinite;
-            z-index: 0;
-        }
-
-        @keyframes backgroundMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(5%, 5%) rotate(2deg); }
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
         }
-
-        .container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            max-width: 720px;
-            width: 100%;
-            box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                0 20px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-            animation: containerFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes containerFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.96);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .header {
-            padding: 40px 40px 30px;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .header-glow {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 100px;
-            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
-            filter: blur(40px);
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .header-content {
-            position: relative;
+        .nav-logo {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
-
-        .logo {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
+        .nav-logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--gold), #8b6914);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px var(--glow);
+            font-family: var(--font-display);
+            font-size: 20px; font-weight: 800; color: #0a0a0f;
         }
-
-        .logo svg {
-            width: 28px;
-            height: 28px;
-            color: white;
-        }
-
-        .header-text h1 {
-            font-size: 1.75em;
+        .nav-logo-text h2 {
+            font-family: var(--font-display);
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: -0.02em;
         }
-
-        .header-text p {
-            color: var(--text-secondary);
-            font-size: 0.95em;
-            font-weight: 400;
+        .nav-logo-text h2 span { color: var(--gold); }
+        .nav-logo-text p {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
         }
-
-        .content {
-            padding: 32px 40px 40px;
-        }
-
-        .tabs {
+        .nav-menu {
             display: flex;
             gap: 8px;
-            padding: 4px;
-            background: var(--bg-elevated);
-            border-radius: 12px;
-            margin-bottom: 32px;
-            border: 1px solid var(--border);
+            flex-wrap: wrap;
         }
-
-        .tab {
-            flex: 1;
-            padding: 10px 16px;
+        .nav-btn {
             background: transparent;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .tab svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .tab.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 0 20px var(--glow);
-        }
-
-        .tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-        }
-
-        .tab-content {
-            display: none;
-            animation: tabFadeIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes tabFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .info-box {
-            background: var(--bg-elevated);
             border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-        }
-
-        .info-box-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .info-box-icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .info-box-icon svg {
-            width: 18px;
-            height: 18px;
-            color: white;
-        }
-
-        .info-box-title {
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        .info-box-content {
             color: var(--text-secondary);
-            font-size: 0.875em;
-            line-height: 1.6;
-        }
-
-        .info-box-content p {
-            margin-bottom: 6px;
-        }
-
-        .info-box-content p:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 0.875em;
-            color: var(--text-primary);
-        }
-
-        .form-label svg {
-            width: 16px;
-            height: 16px;
-            color: var(--primary);
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 0.95em;
-            font-family: inherit;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--glow);
-        }
-
-        .form-control::placeholder {
-            color: var(--text-secondary);
-        }
-
-        select.form-control {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 20px;
-            padding-right: 40px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95em;
-            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 8px;
-            font-family: inherit;
-        }
-
-        .btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px var(--glow);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border);
-            box-shadow: none;
-        }
-
-        .btn-renew {
-            background: linear-gradient(135deg, var(--warning), #ea580c);
-        }
-
-        .btn-renew:hover {
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-        }
-
-        .loader {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(13, 13, 13, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loader.show {
-            display: flex;
-        }
-
-        .loader-content {
-            text-align: center;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 20px;
-            border: 3px solid rgba(16, 163, 127, 0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loader-text {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .loader-subtext {
-            font-size: 0.9em;
-            color: var(--text-secondary);
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 400px;
-        }
-
-        .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: start;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            animation: toastSlide 0.3s ease;
-            min-width: 300px;
-        }
-
-        @keyframes toastSlide {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            font-size: 0.95em;
-            margin-bottom: 4px;
-        }
-
-        .toast-message {
-            font-size: 0.875em;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .toast-close:hover {
-            color: var(--text-primary);
-        }
-
-        .toast.success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast.error .toast-icon {
-            color: var(--danger);
-        }
-
-        .toast.warning .toast-icon {
-            color: var(--warning);
-        }
-
-        .key-display {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 24px;
-            animation: keyDisplayFade 0.4s ease;
-        }
-
-        @keyframes keyDisplayFade {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .key-display-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .key-display-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .key-display-icon svg {
-            width: 22px;
-            height: 22px;
-            color: white;
-        }
-
-        .key-display-title {
-            font-size: 1.2em;
-            font-weight: 700;
-        }
-
-        .key-code-wrapper {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .key-code {
-            font-family: 'Courier New', monospace;
-            font-size: 0.95em;
-            color: var(--primary);
-            font-weight: 700;
-            word-break: break-all;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
-
-        .key-info {
-            margin-top: 16px;
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--gold-glow);
+            border-color: var(--gold);
+            color: var(--gold);
         }
-
-        .key-info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9em;
-        }
-
-        .key-info-item:last-child {
-            border-bottom: none;
-        }
-
-        .key-info-label {
-            color: var(--text-secondary);
-            font-weight: 500;
+        .nav-user {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 11px;
         }
-
-        .key-info-label svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .key-info-value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .expiry-timer {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .expiry-warning {
-            color: var(--warning);
-        }
-
-        .expiry-danger {
-            color: var(--danger);
-        }
-
-        .copy-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+        .user-avatar {
+            width: 32px; height: 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 0.9em;
-            font-family: inherit;
+        }
+        .logout-btn {
+            background: var(--red-glow);
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 10px;
         }
 
-        .copy-btn svg {
-            width: 16px;
-            height: 16px;
+        /* Section Pages */
+        .page {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+        .page.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .copy-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: pulse 2s ease-in-out infinite;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* Grid */
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+        
+        /* Stat Cards */
+        .stat-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-top: 4px;
         }
 
-        .hidden {
-            display: none !important;
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 8px var(--gold-glow);
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-transform: uppercase;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b6914, var(--gold));
+            color: #060a0f;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px var(--gold-glow); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+        .btn-outline:hover { background: var(--gold-glow); }
+        .btn-danger {
+            background: var(--red-glow);
+            border: 1px solid var(--red);
+            color: var(--red);
+        }
+        .btn-sm { padding: 5px 12px; font-size: 9px; }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 11px;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 10px;
+            color: var(--gold);
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(26,45,63,0.5);
+        }
+        .data-table tr:hover td { background: var(--bg-hover); }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+        .badge-active { background: rgba(0,255,136,0.15); color: var(--green); }
+        .badge-inactive { background: rgba(255,51,85,0.15); color: var(--red); }
+        .badge-premium { background: rgba(201,160,61,0.15); color: var(--gold); }
+
+        /* Login Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(6,10,15,0.98);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 {
+            font-family: var(--font-display);
+            font-size: 14px;
+            color: var(--gold);
+        }
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .hidden { display: none; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-panel);
+            border-left: 3px solid var(--gold);
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 2100;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.error { border-left-color: var(--red); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        @media (max-width: 768px) {
-            .toast-container {
-                right: 10px;
-                left: 10px;
-                max-width: none;
-            }
-
-            .toast {
-                min-width: auto;
-            }
-
-            .container {
-                border-radius: 16px;
-            }
-
-            .header {
-                padding: 30px 24px 24px;
-            }
-
-            .content {
-                padding: 24px;
-            }
-
-            .header-text h1 {
-                font-size: 1.5em;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .tab {
-                justify-content: flex-start;
-                padding: 12px 16px;
-            }
+        @media (max-width: 900px) {
+            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+            .nav-menu { order: 3; width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
+<div id="scanlines"></div>
 
-    <div id="loader" class="loader">
-        <div class="loader-content">
-            <div class="spinner"></div>
-            <div class="loader-text" id="loaderText">Processing...</div>
-            <div class="loader-subtext" id="loaderSubtext">Please wait</div>
+<div class="container">
+    <!-- Navigation -->
+    <div class="nav-bar">
+        <div class="nav-logo">
+            <div class="nav-logo-icon">BX</div>
+            <div class="nav-logo-text">
+                <h2>BYOKUX<span>MON</span></h2>
+                <p>PREMIUM PLATFORM</p>
+            </div>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <button class="nav-btn" onclick="showPage('landing')">HOME</button>
+            <button class="nav-btn" onclick="showPage('products')">PRODUCTS</button>
+            <button class="nav-btn" onclick="showPage('dashboard')">DASHBOARD</button>
+            <button class="nav-btn" onclick="showPage('tools')">TOOLS</button>
+            <button class="nav-btn" onclick="showPage('admin')">ADMIN</button>
+        </div>
+        <div class="nav-user" id="navUser">
+            <span id="userDisplay"></span>
+            <button class="logout-btn hidden" id="logoutBtn" onclick="logout()">LOGOUT</button>
+            <button class="btn-outline btn-sm" id="loginShowBtn" onclick="showLoginModal()">LOGIN</button>
         </div>
     </div>
 
-    <div class="container">
-        <div class="header">
-            <div class="header-glow"></div>
-            <div class="header-content">
-                <div class="logo">
-                    <i data-lucide="key-round"></i>
-                </div>
-                <div class="header-text">
-                    <h1>Script Hub</h1>
-                    <p>Advanced Key Management System</p>
+    <!-- LANDING PAGE -->
+    <div id="page-landing" class="page active">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><span class="pulse-dot"></span> WELCOME TO BYOKUXMON</span>
+            </div>
+            <div style="text-align: center; padding: 40px 20px;">
+                <h1 style="font-family: var(--font-display); font-size: 42px; margin-bottom: 16px;">PREMIUM <span style="color: var(--gold);">SOLUTIONS</span></h1>
+                <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 30px;">Advanced tools, premium products, and professional monitoring for your business needs.</p>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="showPage('products')">EXPLORE PRODUCTS</button>
+                    <button class="btn btn-outline" onclick="showLoginModal()">LOGIN TO ACCESS</button>
                 </div>
             </div>
         </div>
-
-        <div class="content">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('generate')">
-                    <i data-lucide="sparkles"></i>
-                    <span>Generate</span>
-                </button>
-                <button class="tab" onclick="switchTab('check')">
-                    <i data-lucide="search"></i>
-                    <span>Check</span>
-                </button>
-                <button class="tab" onclick="switchTab('renew')">
-                    <i data-lucide="refresh-cw"></i>
-                    <span>Renew</span>
-                </button>
+        <div class="grid-3">
+            <div class="stat-card">
+                <div class="stat-value" id="landingProducts">-</div>
+                <div class="stat-label">PRODUCTS</div>
             </div>
-
-            <!-- GENERATE TAB -->
-            <div id="generateTab" class="tab-content active">
-                <div class="info-box">
-                    <div class="info-box-header">
-                        <div class="info-box-icon">
-                            <i data-lucide="info"></i>
-                        </div>
-                        <div class="info-box-title">Generate Key Information</div>
-                    </div>
-                    <div class="info-box-content">
-                        <p>• Enter your valid Roblox username</p>
-                        <p>• Select key duration according to your needs</p>
-                        <p>• Keys are automatically saved securely</p>
-                        <p>• One user can only have 1 active key</p>
-                    </div>
-                </div>
-
-                <form id="keyForm">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="user"></i>
-                            <span>Roblox Username</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            id="username" 
-                            class="form-control"
-                            placeholder="Enter your Roblox username..." 
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="clock"></i>
-                            <span>Key Duration</span>
-                        </label>
-                        <select id="duration" class="form-control" required>
-                            <option value="">Select duration...</option>
-                            <option value="1">1 Hour (Testing)</option>
-                            <option value="24">1 Day</option>
-                            <option value="72">3 Days</option>
-                            <option value="168">7 Days</option>
-                            <option value="720">30 Days</option>
-                            <option value="permanent">Permanent</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn" id="submitBtn">
-                        <i data-lucide="sparkles"></i>
-                        <span>Generate Key</span>
-                    </button>
-                </form>
-
-                <div id="keyDisplay" style="display: none;"></div>
+            <div class="stat-card">
+                <div class="stat-value" id="landingUsers">-</div>
+                <div class="stat-label">ACTIVE USERS</div>
             </div>
-
-            <!-- CHECK TAB -->
-            <div id="checkTab" class="tab-content">
-                <div class="info-box">
-                    <div class="info-box-header">
-                        <div class="info-box-icon">
-                            <i data-lucide="info"></i>
-                        </div>
-                        <div class="info-box-title">Check Key Information</div>
-                    </div>
-                    <div class="info-box-content">
-                        <p>• Check key status and remaining time</p>
-                        <p>• View complete key details</p>
-                        <p>• Monitor expiry date in realtime</p>
-                    </div>
-                </div>
-
-                <form id="checkForm">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="user"></i>
-                            <span>Roblox Username</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            id="checkUsername" 
-                            class="form-control"
-                            placeholder="Enter your Roblox username..." 
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="key"></i>
-                            <span>Key</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            id="checkKey" 
-                            class="form-control"
-                            placeholder="Paste your key here..." 
-                            required
-                        >
-                    </div>
-
-                    <button type="submit" class="btn">
-                        <i data-lucide="search"></i>
-                        <span>Check Status</span>
-                    </button>
-                </form>
-
-                <div id="checkResult" style="display: none;"></div>
-            </div>
-
-            <!-- RENEW TAB -->
-            <div id="renewTab" class="tab-content">
-                <div class="info-box">
-                    <div class="info-box-header">
-                        <div class="info-box-icon">
-                            <i data-lucide="info"></i>
-                        </div>
-                        <div class="info-box-title">Renew Key Information</div>
-                    </div>
-                    <div class="info-box-content">
-                        <p>• Step 1: Enter username to check active key</p>
-                        <p>• Step 2: Select extension duration and renew</p>
-                        <p>• Renewal only allowed if remaining time > 1 hour</p>
-                        <p>• Expired keys cannot be renewed</p>
-                    </div>
-                </div>
-
-                <div id="renewStep1">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="user"></i>
-                            <span>Roblox Username</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            id="renewUsername" 
-                            class="form-control"
-                            placeholder="Enter your Roblox username..." 
-                            required
-                        >
-                    </div>
-
-                    <button type="button" class="btn" id="checkUsernameBtn" onclick="checkUsername()">
-                        <i data-lucide="search"></i>
-                        <span>Check Username</span>
-                    </button>
-                </div>
-
-                <div id="renewStep2" class="hidden">
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i data-lucide="plus"></i>
-                            <span>Extension Duration</span>
-                        </label>
-                        <select id="renewDuration" class="form-control">
-                            <option value="">Select extension duration...</option>
-                            <option value="1">+1 Hour</option>
-                            <option value="24">+1 Day</option>
-                            <option value="72">+3 Days</option>
-                            <option value="168">+7 Days</option>
-                            <option value="720">+30 Days</option>
-                        </select>
-                    </div>
-
-                    <div style="display: flex; gap: 12px;">
-                        <button type="button" class="btn btn-secondary" onclick="resetRenewForm()" style="flex: 1;">
-                            <i data-lucide="arrow-left"></i>
-                            <span>Back</span>
-                        </button>
-                        <button type="button" class="btn btn-renew" id="renewBtn" onclick="renewKey()" style="flex: 2;">
-                            <i data-lucide="refresh-cw"></i>
-                            <span>Renew Key</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="renewResult" style="display: none;"></div>
+            <div class="stat-card">
+                <div class="stat-value" id="landingSales">-</div>
+                <div class="stat-label">TOTAL SALES</div>
             </div>
         </div>
     </div>
 
-    <script>
-        lucide.createIcons();
+    <!-- PRODUCTS PAGE -->
+    <div id="page-products" class="page">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title"><span class="pulse-dot"></span> AVAILABLE PRODUCTS</span>
+            </div>
+            <div id="productsList"></div>
+        </div>
+    </div>
 
-        let currentUserKey = null;
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="page">
+        <div class="grid-4">
+            <div class="stat-card"><div class="stat-value" id="dashRevenue">$0</div><div class="stat-label">TOTAL REVENUE</div></div>
+            <div class="stat-card"><div class="stat-value" id="dashSales">0</div><div class="stat-label">TOTAL SALES</div></div>
+            <div class="stat-card"><div class="stat-value" id="dashUsers">0</div><div class="stat-label">REGISTERED USERS</div></div>
+            <div class="stat-card"><div class="stat-value" id="dashProducts">0</div><div class="stat-label">ACTIVE PRODUCTS</div></div>
+        </div>
+        <div class="grid-2">
+            <div class="card"><div class="card-header"><span class="card-title">RECENT ORDERS</span></div><div id="recentOrders"></div></div>
+            <div class="card"><div class="card-header"><span class="card-title">TOP PRODUCTS</span></div><div id="topProducts"></div></div>
+        </div>
+    </div>
 
-        function showToast(type, title, message, duration = 5000) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+    <!-- TOOLS PAGE -->
+    <div id="page-tools" class="page">
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header"><span class="card-title">🔧 KEY GENERATOR</span></div>
+                <div class="form-group"><label>PRODUCT</label><select id="toolProduct"><option>Premium License</option><option>VIP Access</option></select></div>
+                <div class="form-group"><label>USERNAME</label><input type="text" id="toolUsername" placeholder="Username"></div>
+                <div class="form-group"><label>DURATION (DAYS)</label><input type="number" id="toolDuration" value="30"></div>
+                <button class="btn btn-primary" onclick="generateToolKey()">GENERATE KEY</button>
+                <div id="toolResult" style="margin-top: 16px; font-family: monospace;"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">📊 SALES ANALYZER</span></div>
+                <button class="btn btn-outline" onclick="analyzeSales()">REFRESH ANALYSIS</button>
+                <div id="salesAnalysis" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">⚡ BATCH OPERATIONS</span></div>
+            <div class="grid-2">
+                <button class="btn btn-outline" onclick="batchGenerate()">BATCH GENERATE (10 KEYS)</button>
+                <button class="btn btn-danger" onclick="cleanExpired()">CLEAN EXPIRED KEYS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="page-admin" class="page">
+        <div class="card">
+            <div class="card-header"><span class="card-title">👑 ADMIN PANEL</span></div>
+            <div class="form-group"><label>ADD NEW PRODUCT</label><div class="grid-2"><input type="text" id="newProductName" placeholder="Product Name"><input type="text" id="newProductPrice" placeholder="Price"><button class="btn btn-primary btn-sm" onclick="addProduct()">ADD</button></div></div>
+            <div class="form-group"><label>MANAGE USERS</label><div id="userList"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>LOGIN / REGISTER</h3></div>
+        <div class="modal-body">
+            <div class="form-group"><label>USERNAME</label><input type="text" id="loginUsername" placeholder="Username"></div>
+            <div class="form-group"><label>PASSWORD</label><input type="password" id="loginPassword" placeholder="Password"></div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="doLogin()">LOGIN</button>
+                <button class="btn btn-outline" onclick="doRegister()">REGISTER</button>
+            </div>
+            <div id="loginError" style="color: var(--red); font-size: 11px; margin-top: 12px;"></div>
+        </div>
+        <div class="modal-footer"><button class="btn-outline btn-sm" onclick="closeLoginModal()">CLOSE</button></div>
+    </div>
+</div>
+
+<script>
+    // Database
+    let appData = {
+        users: [
+            { id: 1, username: "admin", password: "admin123", role: "admin", created: "2024-01-01" },
+            { id: 2, username: "user1", password: "user123", role: "user", created: "2024-01-15" }
+        ],
+        products: [
+            { id: 1, name: "Premium License", price: 49.99, sold: 127, revenue: 6348.73 },
+            { id: 2, name: "VIP Access", price: 99.99, sold: 45, revenue: 4499.55 },
+            { id: 3, name: "Basic Tool", price: 19.99, sold: 312, revenue: 6236.88 }
+        ],
+        orders: [
+            { id: 1, user: "user1", product: "Premium License", amount: 49.99, date: "2024-01-20", status: "completed" },
+            { id: 2, user: "user2", product: "VIP Access", amount: 99.99, date: "2024-01-19", status: "completed" },
+            { id: 3, user: "user3", product: "Basic Tool", amount: 19.99, date: "2024-01-18", status: "completed" }
+        ],
+        keys: []
+    };
+
+    let currentUser = null;
+
+    function saveData() { localStorage.setItem('bxm_app_data', JSON.stringify(appData)); }
+    function loadData() {
+        const saved = localStorage.getItem('bxm_app_data');
+        if (saved) appData = JSON.parse(saved);
+        else saveData();
+    }
+
+    function showToast(msg, type = "success") {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function showPage(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${page}`).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        updateUI();
+    }
+
+    function updateUI() {
+        // Update stats
+        document.getElementById('landingProducts').innerText = appData.products.length;
+        document.getElementById('landingUsers').innerText = appData.users.length;
+        document.getElementById('landingSales').innerText = appData.orders.length;
+        
+        const totalRevenue = appData.products.reduce((sum, p) => sum + p.revenue, 0);
+        document.getElementById('dashRevenue').innerHTML = `$${totalRevenue.toLocaleString()}`;
+        document.getElementById('dashSales').innerText = appData.orders.length;
+        document.getElementById('dashUsers').innerText = appData.users.length;
+        document.getElementById('dashProducts').innerText = appData.products.length;
+        
+        // Products list
+        const productsHtml = `<table class="data-table"><thead><tr><th>PRODUCT</th><th>PRICE</th><th>SOLD</th><th>REVENUE</th></tr></thead><tbody>${appData.products.map(p => `<tr><td>${p.name}</td><td>$${p.price}</td><td>${p.sold}</td><td>$${p.revenue.toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
+        document.getElementById('productsList').innerHTML = productsHtml;
+        
+        // Recent orders
+        const ordersHtml = `<table class="data-table"><thead><tr><th>USER</th><th>PRODUCT</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>${appData.orders.slice(0,5).map(o => `<tr><td>${o.user}</td><td>${o.product}</td><td>$${o.amount}</td><td><span class="badge badge-active">${o.status}</span></td></tr>`).join('')}</tbody></table>`;
+        document.getElementById('recentOrders').innerHTML = ordersHtml;
+        
+        // Top products
+        const topHtml = `<table class="data-table"><thead><tr><th>PRODUCT</th><th>SALES</th><th>REVENUE</th></tr></thead><tbody>${appData.products.sort((a,b) => b.sold - a.sold).slice(0,5).map(p => `<tr><td>${p.name}</td><td>${p.sold}</td><td>$${p.revenue.toLocaleString()}</td></tr>`).join('')}</tbody></table>`;
+        document.getElementById('topProducts').innerHTML = topHtml;
+        
+        // User list
+        const userHtml = `<table class="data-table"><thead><tr><th>USERNAME</th><th>ROLE</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody>${appData.users.map(u => `<tr><td>${u.username}</td><td><span class="badge ${u.role === 'admin' ? 'badge-premium' : 'badge-active'}">${u.role}</span></td><td>${u.created}</td><td>${u.role !== 'admin' ? `<button class="btn-danger btn-sm" onclick="deleteUser('${u.username}')">DELETE</button>` : '-'}</td></tr>`).join('')}</tbody></table>`;
+        document.getElementById('userList').innerHTML = userHtml;
+        
+        // Nav user display
+        if (currentUser) {
+            document.getElementById('userDisplay').innerHTML = `<span class="badge ${currentUser.role === 'admin' ? 'badge-premium' : 'badge-active'}">${currentUser.username.toUpperCase()}</span>`;
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('loginShowBtn').classList.add('hidden');
             
-            const icons = {
-                success: 'check-circle',
-                error: 'x-circle',
-                warning: 'alert-triangle',
-                info: 'info'
-            };
-            
-            toast.innerHTML = `
-                <i data-lucide="${icons[type]}" class="toast-icon"></i>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="this.parentElement.remove()">
-                    <i data-lucide="x"></i>
-                </button>
-            `;
-            
-            container.appendChild(toast);
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.style.animation = 'toastSlide 0.3s ease reverse';
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+            // Show/hide admin menu
+            const adminBtn = document.querySelector('.nav-btn:last-child');
+            if (currentUser.role === 'admin') adminBtn.style.display = 'block';
+            else adminBtn.style.display = 'none';
+        } else {
+            document.getElementById('userDisplay').innerHTML = '';
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('loginShowBtn').classList.remove('hidden');
+            document.querySelector('.nav-btn:last-child').style.display = 'block';
         }
+    }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            
-            const tabs = { 'generate': 0, 'check': 1, 'renew': 2 };
-            document.querySelectorAll('.tab')[tabs[tab]].classList.add('active');
-            document.getElementById(tab + 'Tab').classList.add('active');
-            
-            if (tab !== 'renew') {
-                resetRenewForm();
-            }
+    function showLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+    function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); document.getElementById('loginError').innerText = ''; }
+
+    function doLogin() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const user = appData.users.find(u => u.username === username && u.password === password);
+        if (user) {
+            currentUser = user;
+            localStorage.setItem('bxm_current_user', JSON.stringify({ username: user.username, role: user.role }));
+            closeLoginModal();
+            updateUI();
+            showToast(`Welcome back, ${username}!`);
+            showPage('dashboard');
+        } else {
+            document.getElementById('loginError').innerText = 'Invalid username or password';
         }
+    }
 
-        function showLoader(text = 'Processing...', subtext = 'Please wait') {
-            document.getElementById('loaderText').textContent = text;
-            document.getElementById('loaderSubtext').textContent = subtext;
-            document.getElementById('loader').classList.add('show');
+    function doRegister() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        if (!username || !password) { document.getElementById('loginError').innerText = 'Fill all fields'; return; }
+        if (appData.users.find(u => u.username === username)) { document.getElementById('loginError').innerText = 'Username exists'; return; }
+        const newUser = { id: appData.users.length + 1, username, password, role: 'user', created: new Date().toISOString().split('T')[0] };
+        appData.users.push(newUser);
+        saveData();
+        showToast('Registration successful! Please login.');
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('bxm_current_user');
+        updateUI();
+        showToast('Logged out');
+        showPage('landing');
+    }
+
+    function generateToolKey() {
+        if (!currentUser) { showToast('Please login first', 'error'); return; }
+        const product = document.getElementById('toolProduct').value;
+        const username = document.getElementById('toolUsername').value;
+        const duration = document.getElementById('toolDuration').value;
+        if (!username) { showToast('Enter username', 'error'); return; }
+        const key = `KEY-${Math.random().toString(36).substr(2, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+        const expire = new Date();
+        expire.setDate(expire.getDate() + parseInt(duration));
+        appData.keys.push({ key, product, username, expire: expire.toISOString(), created: new Date().toISOString() });
+        saveData();
+        document.getElementById('toolResult').innerHTML = `<div style="background:var(--bg-deep);padding:12px;border-radius:6px;text-align:center;"><code style="color:var(--green)">${key}</code><br><span style="font-size:10px;">Expires: ${expire.toLocaleString()}</span><br><button class="copy-btn" onclick="navigator.clipboard.writeText('${key}')">COPY</button></div>`;
+        showToast('Key generated!');
+    }
+
+    function analyzeSales() {
+        const total = appData.products.reduce((s, p) => s + p.revenue, 0);
+        const avg = total / appData.products.length;
+        document.getElementById('salesAnalysis').innerHTML = `<div class="stat-card">📊 TOTAL REVENUE: $${total.toLocaleString()}<br>📈 AVG PER PRODUCT: $${avg.toFixed(2)}<br>🎯 TOTAL ORDERS: ${appData.orders.length}</div>`;
+    }
+
+    function batchGenerate() {
+        if (!currentUser) { showToast('Login first', 'error'); return; }
+        for (let i = 0; i < 10; i++) {
+            const key = `BATCH-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+            const expire = new Date();
+            expire.setDate(expire.getDate() + 30);
+            appData.keys.push({ key, product: 'Batch Product', username: 'batch_user', expire: expire.toISOString(), created: new Date().toISOString() });
         }
+        saveData();
+        showToast('10 keys generated!');
+    }
 
-        function hideLoader() {
-            document.getElementById('loader').classList.remove('show');
-        }
+    function cleanExpired() {
+        const now = new Date();
+        const before = appData.keys.length;
+        appData.keys = appData.keys.filter(k => new Date(k.expire) > now);
+        saveData();
+        showToast(`Cleaned ${before - appData.keys.length} expired keys`);
+    }
 
-        // Check Username - Direct API Call
-        async function checkUsername() {
-            const username = document.getElementById('renewUsername').value.trim();
-            
-            if (!username) {
-                showToast('error', 'Error', 'Please enter your Roblox username');
-                return;
-            }
+    function addProduct() {
+        if (!currentUser || currentUser.role !== 'admin') { showToast('Admin only', 'error'); return; }
+        const name = document.getElementById('newProductName').value;
+        const price = parseFloat(document.getElementById('newProductPrice').value);
+        if (!name || !price) { showToast('Fill all fields', 'error'); return; }
+        appData.products.push({ id: appData.products.length + 1, name, price, sold: 0, revenue: 0 });
+        saveData();
+        updateUI();
+        showToast('Product added!');
+        document.getElementById('newProductName').value = '';
+        document.getElementById('newProductPrice').value = '';
+    }
 
-            showLoader('Checking Username...', 'Looking for active key...');
+    function deleteUser(username) {
+        if (!currentUser || currentUser.role !== 'admin') return;
+        appData.users = appData.users.filter(u => u.username !== username);
+        saveData();
+        updateUI();
+        showToast(`User ${username} deleted`);
+    }
 
-            try {
-                // Direct call to verify-key API with dummy key to check username
-                const testResponse = await fetch(`/api/verify-key?key=CHECK_USER&username=${encodeURIComponent(username)}`);
-                const testData = await testResponse.json();
+    // Load saved session
+    const savedUser = localStorage.getItem('bxm_current_user');
+    if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        currentUser = appData.users.find(u => u.username === parsed.username && u.role === parsed.role);
+        if (!currentUser) localStorage.removeItem('bxm_current_user');
+    }
 
-                hideLoader();
+    loadData();
+    updateUI();
 
-                // If user not found, API will return specific error
-                if (testData.error && testData.error.includes('tidak ditemukan')) {
-                    showToast('error', 'Username Not Found', 'No active key found for this username. Please generate a key first.');
-                    return;
-                }
-
-                // User exists, now check with renew API by trying to get actual key status
-                // We'll use the renew endpoint just to validate (won't actually renew yet)
-                showLoader('Validating Key...', 'Checking if key can be renewed...');
-
-                const renewCheckResponse = await fetch('/api/renew-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        username, 
-                        duration: '1' // Dummy duration just to check
-                    })
-                });
-
-                const renewCheckData = await renewCheckResponse.json();
-                hideLoader();
-
-                if (renewCheckResponse.ok || (renewCheckData.error && renewCheckData.error.includes('jam'))) {
-                    // User has active key, show step 2
-                    document.getElementById('renewStep1').classList.add('hidden');
-                    document.getElementById('renewStep2').classList.remove('hidden');
-                    
-                    if (renewCheckData.error && renewCheckData.error.includes('jam')) {
-                        showToast('warning', 'Note', renewCheckData.error);
-                    } else {
-                        showToast('success', 'Username Found', 'Active key found! You can renew it.');
-                    }
-                } else {
-                    showToast('error', 'Cannot Renew', renewCheckData.error || 'Unable to renew this key');
-                }
-
-            } catch (error) {
-                hideLoader();
-                console.error('Error:', error);
-                showToast('error', 'Error', 'Failed to check username. Please try again.');
-            }
-        }
-
-        function resetRenewForm() {
-            document.getElementById('renewStep1').classList.remove('hidden');
-            document.getElementById('renewStep2').classList.add('hidden');
-            document.getElementById('renewResult').style.display = 'none';
-            document.getElementById('renewDuration').value = '';
-            currentUserKey = null;
-        }
-
-        async function renewKey() {
-            const duration = document.getElementById('renewDuration').value;
-            const username = document.getElementById('renewUsername').value.trim();
-
-            if (!duration) {
-                showToast('warning', 'Select Duration', 'Please select extension duration');
-                return;
-            }
-
-            showLoader('Renewing Key...', 'Extending key duration...');
-
-            try {
-                const response = await fetch('/api/renew-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, duration })
-                });
-
-                const data = await response.json();
-                hideLoader();
-
-                if (response.ok) {
-                    showToast('success', 'Key Renewed!', data.message);
-                    displayRenewResult(data);
-                    
-                    setTimeout(() => {
-                        resetRenewForm();
-                        document.getElementById('renewUsername').value = '';
-                    }, 3000);
-                } else {
-                    showToast('error', 'Renewal Failed', data.error || 'Failed to renew key');
-                }
-            } catch (error) {
-                hideLoader();
-                showToast('error', 'Error', 'Error: ' + error.message);
-            }
-        }
-
-        document.getElementById('keyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const duration = document.getElementById('duration').value;
-
-            if (!username || !duration) {
-                showToast('error', 'Incomplete Form', 'Please fill all fields');
-                return;
-            }
-
-            showLoader('Generating Key...', 'Creating secure key for ' + username);
-            
-            try {
-                const response = await fetch('/api/generate-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, duration })
-                });
-
-                const data = await response.json();
-                hideLoader();
-
-                if (response.ok) {
-                    showToast('success', 'Key Generated!', 'Key has been generated successfully');
-                    displayKey(data.key, username, data.duration, data.expiresAtFormatted);
-                    document.getElementById('keyForm').reset();
-                } else {
-                    showToast('error', 'Generation Failed', data.error || 'Failed to generate key');
-                }
-            } catch (error) {
-                hideLoader();
-                showToast('error', 'Error', 'Error: ' + error.message);
-            }
-        });
-
-        document.getElementById('checkForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('checkUsername').value.trim();
-            const key = document.getElementById('checkKey').value.trim();
-
-            if (!username || !key) {
-                showToast('error', 'Incomplete Form', 'Please fill all fields');
-                return;
-            }
-
-            showLoader('Checking Key...', 'Verifying key status...');
-            
-            try {
-                const response = await fetch(`/api/verify-key?key=${encodeURIComponent(key)}&username=${encodeURIComponent(username)}`);
-                const data = await response.json();
-                hideLoader();
-
-                if (data.valid) {
-                    showToast('success', 'Key Valid', 'Key is valid and active');
-                    displayKeyStatus(data.data, key);
-                } else {
-                    showToast('error', 'Invalid Key', data.error || 'Key is not valid');
-                    document.getElementById('checkResult').style.display = 'none';
-                }
-            } catch (error) {
-                hideLoader();
-                showToast('error', 'Error', 'Error: ' + error.message);
-            }
-        });
-
-        function displayKey(key, username, duration, expiryText) {
-            document.getElementById('keyDisplay').innerHTML = `
-                <div class="key-display">
-                    <div class="key-display-header">
-                        <div class="key-display-icon">
-                            <i data-lucide="check-circle"></i>
-                        </div>
-                        <div class="key-display-title">Key Generated Successfully!</div>
-                    </div>
-                    <div class="key-code-wrapper">
-                        <div class="key-code" id="keyCode">${key}</div>
-                    </div>
-                    <button class="copy-btn" onclick="copyKey()">
-                        <i data-lucide="copy"></i>
-                        <span>Copy Key</span>
-                    </button>
-                    <div class="key-info">
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="user"></i>
-                                Username
-                            </span>
-                            <span class="key-info-value">${username}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="clock"></i>
-                                Duration
-                            </span>
-                            <span class="key-info-value">${duration}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="calendar"></i>
-                                Expires
-                            </span>
-                            <span class="key-info-value">${expiryText}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('keyDisplay').style.display = 'block';
-            lucide.createIcons();
-        }
-
-        function displayKeyStatus(keyData, key) {
-            const now = new Date();
-            const expiresAt = keyData.expiresAt ? new Date(keyData.expiresAt) : null;
-            
-            let timeRemaining = '';
-            let timerClass = 'expiry-timer';
-            
-            if (expiresAt) {
-                const diffMs = expiresAt - now;
-                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                
-                if (diffMs > 0) {
-                    timeRemaining = `${diffHours}h ${diffMins}m`;
-                    if (diffHours < 1) timerClass += ' expiry-danger';
-                    else if (diffHours < 24) timerClass += ' expiry-warning';
-                } else {
-                    timeRemaining = 'EXPIRED';
-                    timerClass += ' expiry-danger';
-                }
-            } else {
-                timeRemaining = 'PERMANENT';
-            }
-
-            document.getElementById('checkResult').innerHTML = `
-                <div class="key-display">
-                    <div class="key-display-header">
-                        <div class="key-display-icon">
-                            <i data-lucide="shield-check"></i>
-                        </div>
-                        <div class="key-display-title">Key Status</div>
-                    </div>
-                    <div class="key-code-wrapper">
-                        <div class="key-code">${key}</div>
-                    </div>
-                    <div class="key-info">
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="user"></i>
-                                Username
-                            </span>
-                            <span class="key-info-value">${keyData.username}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="clock"></i>
-                                Duration
-                            </span>
-                            <span class="key-info-value">${keyData.duration === 'permanent' ? 'Permanent' : keyData.duration + ' Hours'}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="calendar-plus"></i>
-                                Created
-                            </span>
-                            <span class="key-info-value">${new Date(keyData.createdAt).toLocaleString('id-ID')}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="calendar-x"></i>
-                                Expires
-                            </span>
-                            <span class="key-info-value">${expiresAt ? expiresAt.toLocaleString('id-ID') : 'Never'}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="timer"></i>
-                                Remaining
-                            </span>
-                            <span class="${timerClass}">${timeRemaining}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('checkResult').style.display = 'block';
-            lucide.createIcons();
-        }
-
-        function displayRenewResult(data) {
-            document.getElementById('renewResult').innerHTML = `
-                <div class="key-display">
-                    <div class="key-display-header">
-                        <div class="key-display-icon">
-                            <i data-lucide="check-circle"></i>
-                        </div>
-                        <div class="key-display-title">Key Renewed Successfully!</div>
-                    </div>
-                    <div class="key-info">
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="calendar"></i>
-                                New Expiry
-                            </span>
-                            <span class="key-info-value">${new Date(data.newExpiresAt).toLocaleString('id-ID')}</span>
-                        </div>
-                        <div class="key-info-item">
-                            <span class="key-info-label">
-                                <i data-lucide="repeat"></i>
-                                Renew Count
-                            </span>
-                            <span class="key-info-value">${data.renewCount} times</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('renewResult').style.display = 'block';
-            lucide.createIcons();
-        }
-
-        function copyKey() {
-            const keyCode = document.getElementById('keyCode').textContent;
-            navigator.clipboard.writeText(keyCode).then(() => {
-                showToast('success', 'Copied!', 'Key copied to clipboard');
-            });
-        }
-    </script>
+    // Expose functions to global
+    window.showPage = showPage; window.showLoginModal = showLoginModal; window.closeLoginModal = closeLoginModal;
+    window.doLogin = doLogin; window.doRegister = doRegister; window.logout = logout;
+    window.generateToolKey = generateToolKey; window.analyzeSales = analyzeSales;
+    window.batchGenerate = batchGenerate; window.cleanExpired = cleanExpired;
+    window.addProduct = addProduct; window.deleteUser = deleteUser;
+</script>
 </body>
 </html>
