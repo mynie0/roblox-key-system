@@ -1,5 +1,818 @@
 <!DOCTYPE html>
+<html lang="id"><!DOCTYPE html>
 <html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ByokuXMon | Premium License Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #060a0f;
+            --bg-panel: #0b1118;
+            --bg-card: #0f1923;
+            --bg-hover: #141f2e;
+            --border: #1a2d3f;
+            --border-bright: #1e3a50;
+            --green: #00ff88;
+            --green-dim: #00cc6a;
+            --green-glow: rgba(0,255,136,0.15);
+            --red: #ff3355;
+            --blue: #00aaff;
+            --yellow: #ffcc00;
+            --orange: #ff8800;
+            --purple: #aa55ff;
+            --gold: #c9a03d;
+            --gold-glow: rgba(201,160,61,0.15);
+            --text-primary: #e0eeff;
+            --text-secondary: #7a9ab8;
+            --text-dim: #3a5570;
+            --font-mono: 'Share Tech Mono', monospace;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-display: 'Orbitron', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        #scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(6,10,15,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 16px 0;
+        }
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--gold), #8b6914);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 22px; font-weight: 800; color: #060a0f;
+        }
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .logo-text h1 span { color: var(--gold); }
+        .logo-text p {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-btn {
+            background: linear-gradient(135deg, #8b6914, var(--gold));
+            color: #060a0f;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px var(--gold-glow); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(201,160,61,0.08), transparent 70%);
+            pointer-events: none;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--gold-glow);
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .hero-title span { color: var(--gold); }
+        .hero-desc {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b6914, var(--gold));
+            color: #060a0f;
+            padding: 12px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--gold-glow); }
+        .btn-outline {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            display: inline-block;
+            background: transparent;
+        }
+        .btn-outline:hover { background: var(--gold-glow); transform: translateY(-2px); }
+        .hero-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .stat-item .number {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .stat-item .label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+        .hero-image {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(135deg, var(--gold), transparent);
+            border-radius: 16px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .key-preview {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--green);
+            background: var(--bg-deep);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            word-break: break-all;
+        }
+
+        /* Products Section */
+        .section {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+        .section-title {
+            text-align: center;
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .section-title span { color: var(--gold); }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            margin-bottom: 50px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px 24px;
+            text-align: center;
+            transition: 0.2s;
+            position: relative;
+        }
+        .product-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+        }
+        .product-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .product-name {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .product-price {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--gold);
+            margin: 16px 0;
+        }
+        .product-price small {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .product-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+        .product-features li {
+            padding: 8px 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+            border-bottom: 1px dashed var(--border);
+        }
+        .product-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .product-btn:hover { background: var(--gold); color: #060a0f; }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        .feature-card {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .feature-icon { font-size: 36px; margin-bottom: 16px; }
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+        .testimonial-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .testimonial-text {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .author-avatar {
+            width: 40px; height: 40px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #060a0f;
+        }
+        .author-name {
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .author-role {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-dim);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--bg-panel), var(--bg-card));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .cta-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+        .footer-links a:hover { color: var(--gold); }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(6,10,15,0.98);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-family: var(--font-display);
+            font-size: 14px;
+            color: var(--gold);
+        }
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+        .modal-body { padding: 20px; }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            outline: none;
+        }
+        .hidden { display: none; }
+
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-title { font-size: 36px; }
+            .hero-desc { margin-left: auto; margin-right: auto; }
+            .hero-stats { justify-content: center; }
+            .products-grid, .features-grid, .testimonials-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div id="scanlines"></div>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">BX</div>
+            <div class="logo-text">
+                <h1>BYOKUX<span>MON</span></h1>
+                <p>PREMIUM LICENSE SOLUTIONS</p>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="#home">HOME</a>
+            <a href="#products">PRODUCTS</a>
+            <a href="#features">FEATURES</a>
+            <a href="#testimonials">TESTIMONIALS</a>
+            <a href="#" onclick="showAccessModal()" class="nav-btn">GET ACCESS</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+    <div class="container">
+        <div class="hero-grid">
+            <div>
+                <div class="hero-badge">✦ TRUSTED BY 10,000+ USERS ✦</div>
+                <h1 class="hero-title">Premium <span>License</span><br>Solutions for Modern Business</h1>
+                <p class="hero-desc">Secure, automated, and scalable license management system. Protect your digital products with enterprise-grade security.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary" onclick="showAccessModal()">GET STARTED</a>
+                    <a href="#products" class="btn-outline">VIEW PRODUCTS</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item"><div class="number">10K+</div><div class="label">ACTIVE USERS</div></div>
+                    <div class="stat-item"><div class="number">50K+</div><div class="label">KEYS GENERATED</div></div>
+                    <div class="stat-item"><div class="number">99.9%</div><div class="label">UPTIME</div></div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="key-preview">
+                    BXM-PR3M-1UM-4XK9<br>
+                    <span style="font-size: 10px; color: var(--text-dim);">✓ VALID UNTIL: 2025-06-15</span>
+                </div>
+                <div class="key-preview" style="border-color: var(--blue);">
+                    BXM-V1P-9N2M-7KQ4<br>
+                    <span style="font-size: 10px; color: var(--text-dim);">✓ PREMIUM ACCESS</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 12px;">
+                    🔒 End-to-end encrypted · Auto-expiry · Real-time validation
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section id="products" class="section">
+    <div class="container">
+        <h2 class="section-title">Choose Your <span>Plan</span></h2>
+        <p class="section-subtitle">Flexible pricing for every need. Start with trial, scale with premium.</p>
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-icon">🎁</div>
+                <h3 class="product-name">Trial</h3>
+                <div class="product-price">FREE</div>
+                <ul class="product-features">
+                    <li>✓ 24 Hours Validity</li>
+                    <li>✓ Basic Features</li>
+                    <li>✓ 1 Device Limit</li>
+                    <li>✓ Email Support</li>
+                </ul>
+                <a href="#" class="product-btn" onclick="showAccessModal()">GET TRIAL</a>
+            </div>
+            <div class="product-card">
+                <div class="product-icon">💎</div>
+                <h3 class="product-name">Premium</h3>
+                <div class="product-price">$49<small>/month</small></div>
+                <ul class="product-features">
+                    <li>✓ 30 Days Validity</li>
+                    <li>✓ All Features</li>
+                    <li>✓ 5 Device Limit</li>
+                    <li>✓ Priority Support</li>
+                    <li>✓ API Access</li>
+                </ul>
+                <a href="#" class="product-btn" onclick="showPurchaseModal('Premium', 49)">PURCHASE</a>
+            </div>
+            <div class="product-card">
+                <div class="product-icon">👑</div>
+                <h3 class="product-name">Lifetime</h3>
+                <div class="product-price">$299<small>/once</small></div>
+                <ul class="product-features">
+                    <li>✓ Lifetime Validity</li>
+                    <li>✓ All Features</li>
+                    <li>✓ Unlimited Devices</li>
+                    <li>✓ 24/7 Priority Support</li>
+                    <li>✓ API + Webhook</li>
+                    <li>✓ Custom Integration</li>
+                </ul>
+                <a href="#" class="product-btn" onclick="showPurchaseModal('Lifetime', 299)">PURCHASE</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="section">
+    <div class="container">
+        <h2 class="section-title">Why Choose <span>Us?</span></h2>
+        <p class="section-subtitle">Enterprise-grade features to protect and manage your digital assets</p>
+        <div class="features-grid">
+            <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-title">Secure Encryption</div><div class="feature-desc">Military-grade encryption for all license keys</div></div>
+            <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Auto Validation</div><div class="feature-desc">Real-time key verification system</div></div>
+            <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Analytics Dashboard</div><div class="feature-desc">Track usage, sales, and user activity</div></div>
+            <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">API Integration</div><div class="feature-desc">RESTful API for seamless integration</div></div>
+            <div class="feature-card"><div class="feature-icon">🔄</div><div class="feature-title">Auto Expiry</div><div class="feature-desc">Automatic key expiration management</div></div>
+            <div class="feature-card"><div class="feature-icon">💬</div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated support for premium users</div></div>
+            <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">Multi-Platform</div><div class="feature-desc">Works on Windows, Mac, Linux, Mobile</div></div>
+            <div class="feature-card"><div class="feature-icon">🔔</div><div class="feature-title">Webhook Alerts</div><div class="feature-desc">Real-time notifications for events</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section id="testimonials" class="section">
+    <div class="container">
+        <h2 class="section-title">What Our <span>Clients Say</span></h2>
+        <p class="section-subtitle">Trusted by businesses and developers worldwide</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card"><div class="testimonial-text">"Best license management system I've ever used. The auto-expiry feature saves me so much time!"</div><div class="testimonial-author"><div class="author-avatar">JD</div><div class="author-name">John Doe</div><div class="author-role">Developer</div></div></div>
+            <div class="testimonial-card"><div class="testimonial-text">"Professional, secure, and easy to integrate. My sales increased 200% after using ByokuXMon."</div><div class="testimonial-author"><div class="author-avatar">SW</div><div class="author-name">Sarah Williams</div><div class="author-role">Business Owner</div></div></div>
+            <div class="testimonial-card"><div class="testimonial-text">"The API is very well documented. I integrated it with my app in less than an hour!"</div><div class="testimonial-author"><div class="author-avatar">MC</div><div class="author-name">Michael Chen</div><div class="author-role">Software Engineer</div></div></div>
+            <div class="testimonial-card"><div class="testimonial-text">"Support team is amazing. They helped me set up everything and answered all my questions."</div><div class="testimonial-author"><div class="author-avatar">ER</div><div class="author-name">Emma Rodriguez</div><div class="author-role">Startup Founder</div></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<div class="container">
+    <div class="cta-section">
+        <h3 class="cta-title">Ready to Secure Your Products?</h3>
+        <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto;">Join thousands of satisfied customers and start protecting your digital assets today.</p>
+        <div class="cta-buttons">
+            <a href="#" class="btn-primary" onclick="showAccessModal()">GET STARTED NOW</a>
+            <a href="#" class="btn-outline" onclick="showContactModal()">CONTACT SALES</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact Us</a>
+            <a href="#">API Docs</a>
+        </div>
+        <p>© 2025 ByokuXMon - Premium License Solutions. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Modal Access -->
+<div id="accessModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>GET ACCESS</h3><span class="modal-close" onclick="closeAccessModal()">&times;</span></div>
+        <div class="modal-body">
+            <div class="form-group"><label>USERNAME</label><input type="text" id="accessUsername" placeholder="Enter your username"></div>
+            <div class="form-group"><label>EMAIL</label><input type="email" id="accessEmail" placeholder="Enter your email"></div>
+            <div class="form-group"><label>PRODUCT</label><select id="accessProduct"><option>Trial (FREE)</option><option>Premium ($49/month)</option><option>Lifetime ($299)</option></select></div>
+            <button class="btn-primary" onclick="processAccess()" style="width:100%">PROCESS</button>
+            <div id="accessResult" style="margin-top: 16px; font-family: monospace; font-size: 11px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Purchase -->
+<div id="purchaseModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>PURCHASE ORDER</h3><span class="modal-close" onclick="closePurchaseModal()">&times;</span></div>
+        <div class="modal-body">
+            <div class="form-group"><label>PRODUCT</label><input type="text" id="purchaseProduct" readonly style="background:var(--bg-deep)"></div>
+            <div class="form-group"><label>TOTAL</label><input type="text" id="purchaseAmount" readonly style="background:var(--bg-deep); color:var(--gold)"></div>
+            <div class="form-group"><label>USERNAME</label><input type="text" id="purchaseUsername" placeholder="Your username"></div>
+            <div class="form-group"><label>EMAIL</label><input type="email" id="purchaseEmail" placeholder="Your email"></div>
+            <button class="btn-primary" onclick="processPurchase()" style="width:100%">CHECKOUT</button>
+            <div id="purchaseResult" style="margin-top: 16px; font-size: 11px; color:var(--green);"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Contact -->
+<div id="contactModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header"><h3>CONTACT SALES</h3><span class="modal-close" onclick="closeContactModal()">&times;</span></div>
+        <div class="modal-body">
+            <div class="form-group"><label>NAME</label><input type="text" id="contactName" placeholder="Your name"></div>
+            <div class="form-group"><label>EMAIL</label><input type="email" id="contactEmail" placeholder="Your email"></div>
+            <div class="form-group"><label>MESSAGE</label><textarea id="contactMessage" rows="3" placeholder="Tell us about your needs..."></textarea></div>
+            <button class="btn-primary" onclick="sendContact()" style="width:100%">SEND MESSAGE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showAccessModal() { document.getElementById('accessModal').classList.remove('hidden'); }
+    function closeAccessModal() { document.getElementById('accessModal').classList.add('hidden'); document.getElementById('accessResult').innerHTML = ''; }
+    
+    function showPurchaseModal(product, price) {
+        document.getElementById('purchaseProduct').value = product;
+        document.getElementById('purchaseAmount').value = `$${price}`;
+        document.getElementById('purchaseModal').classList.remove('hidden');
+    }
+    function closePurchaseModal() { document.getElementById('purchaseModal').classList.add('hidden'); }
+    
+    function showContactModal() { document.getElementById('contactModal').classList.remove('hidden'); }
+    function closeContactModal() { document.getElementById('contactModal').classList.add('hidden'); }
+    
+    function generateKey() {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let parts = [];
+        for (let i = 0; i < 4; i++) {
+            let part = "";
+            for (let j = 0; j < 4; j++) part += chars[Math.floor(Math.random() * 36)];
+            parts.push(part);
+        }
+        return `BXM-${parts[0]}-${parts[1]}-${parts[2]}`;
+    }
+    
+    function processAccess() {
+        const username = document.getElementById('accessUsername').value;
+        const email = document.getElementById('accessEmail').value;
+        const product = document.getElementById('accessProduct').value;
+        
+        if (!username || !email) {
+            document.getElementById('accessResult').innerHTML = '<span style="color:var(--red)">Please fill all fields</span>';
+            return;
+        }
+        
+        const key = generateKey();
+        const expire = new Date();
+        if (product === 'Trial (FREE)') expire.setDate(expire.getDate() + 1);
+        else if (product === 'Premium ($49/month)') expire.setMonth(expire.getMonth() + 1);
+        else expire.setFullYear(expire.getFullYear() + 10);
+        
+        document.getElementById('accessResult').innerHTML = `
+            <div style="background:var(--bg-deep);padding:12px;border-radius:8px;">
+                <div style="color:var(--green); margin-bottom:8px;">✓ ORDER CONFIRMED</div>
+                <div style="font-size:18px;font-weight:bold;color:var(--gold);margin:8px 0;">${key}</div>
+                <div style="font-size:10px;">Product: ${product}</div>
+                <div style="font-size:10px;">Valid until: ${expire.toLocaleDateString()}</div>
+                <button onclick="navigator.clipboard.writeText('${key}')" style="margin-top:12px;background:var(--gold-glow);border:none;padding:6px 12px;border-radius:20px;color:var(--gold);cursor:pointer;">COPY KEY</button>
+            </div>
+        `;
+    }
+    
+    function processPurchase() {
+        const username = document.getElementById('purchaseUsername').value;
+        const email = document.getElementById('purchaseEmail').value;
+        const product = document.getElementById('purchaseProduct').value;
+        
+        if (!username || !email) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        document.getElementById('purchaseResult').innerHTML = '✓ Order submitted! Check your email for payment instructions.';
+        setTimeout(() => { closePurchaseModal(); }, 2000);
+    }
+    
+    function sendContact() {
+        const name = document.getElementById('contactName').value;
+        const email = document.getElementById('contactEmail').value;
+        const message = document.getElementById('contactMessage').value;
+        
+        if (!name || !email || !message) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        alert('Message sent! Our team will contact you within 24 hours.');
+        closeContactModal();
+    }
+    
+    // Close modals when clicking outside
+    window.onclick = function(e) {
+        if (e.target.classList.contains('modal')) e.target.classList.add('hidden');
+    }
+</script>
+</body>
+</html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
